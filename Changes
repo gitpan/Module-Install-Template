@@ -1,0 +1,10 @@
+---
+global:
+  name: Module-Install-Template
+releases:
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
+      - original version
+    date: 2007-11-11T20:23:19Z
+    tags: []
+    version: 0.01
