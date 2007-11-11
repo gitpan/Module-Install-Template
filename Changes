@@ -4,6 +4,13 @@ global:
 releases:
   - author: 'Marcel Gruenauer <marcel@cpan.org>'
     changes:
+      - Makefile's disttest target had to be modified to make pm_to_blib before
+    date: 2007-11-11T21:13:10Z
+    tags:
+      - BUGFIX
+    version: 0.02
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
       - original version
     date: 2007-11-11T20:23:19Z
     tags: []

@@ -6,6 +6,9 @@ use Template;
 use YAML 'LoadFile';
 
 
+our $VERSION = '0.02';
+
+
 my $config_filename = shift;
 die "config filename?\n" unless
     defined $config_filename && length $config_filename;

@@ -6,7 +6,7 @@ use File::Temp 'tempfile';
 use YAML;
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 use base qw(Module::Install::Base);
@@ -118,6 +118,10 @@ sub process_templates {
 # files get copied, but they end up in the wrong place - in the dist dir's
 # blib/lib/. So at the end we move them to the right place and delete the dist
 # dir's blib/ directory.
+#
+# And 'make disttest' needs to be modified as well; we need to have the blib/
+# files before we can test the distribution. So I've added a 'pm_to_blib'
+# requirement to the 'disttest' target.
 
 
 sub MY::postamble {
@@ -131,6 +135,11 @@ create_distdir :
 	    -e '$$m = maniread(); while (($$k, $$v) = each %$$m) { next if $$k !~ m!^lib/!; delete $$m->{$$k}; $$m->{"blib/$$k"} = $$v; }; manicopy($$m, "$(DISTVNAME)", "$(DIST_CP)"); '
 	$(MV) $(DISTVNAME)/blib/lib $(DISTVNAME)/lib
 	$(RM_RF) $(DISTVNAME)/blib
+
+disttest : pm_to_blib distdir
+    cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL 
+    cd $(DISTVNAME) && $(MAKE) $(PASTHRU)
+    cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
 EOPOSTAMBLE
 }
 
