@@ -4,6 +4,14 @@ global:
 releases:
   - author: 'Marcel Gruenauer <marcel@cpan.org>'
     changes:
+      - MY::postamble had spaces instead of tabs for Makefile; fixed that
+      - added pm_to_blib requirement to create_distdir target
+    date: 2007-11-11T21:19:40Z
+    tags:
+      - BUGFIX
+    version: 0.03
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
       - Makefile's disttest target had to be modified to make pm_to_blib before
     date: 2007-11-11T21:13:10Z
     tags:

@@ -6,7 +6,7 @@ use File::Temp 'tempfile';
 use YAML;
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 use base qw(Module::Install::Base);
@@ -129,7 +129,7 @@ sub MY::postamble {
     return '' if defined $::IS_MODULE_INSTALL_TEMPLATE;
     return '' unless Module::Install::Template->is_author;
     return <<'EOPOSTAMBLE';
-create_distdir :
+create_distdir : pm_to_blib
 	$(RM_RF) $(DISTVNAME)
 	$(PERLRUN) "-MExtUtils::Manifest=manicopy,maniread" \
 	    -e '$$m = maniread(); while (($$k, $$v) = each %$$m) { next if $$k !~ m!^lib/!; delete $$m->{$$k}; $$m->{"blib/$$k"} = $$v; }; manicopy($$m, "$(DISTVNAME)", "$(DIST_CP)"); '
@@ -137,9 +137,9 @@ create_distdir :
 	$(RM_RF) $(DISTVNAME)/blib
 
 disttest : pm_to_blib distdir
-    cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL 
-    cd $(DISTVNAME) && $(MAKE) $(PASTHRU)
-    cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
+	cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL 
+	cd $(DISTVNAME) && $(MAKE) $(PASTHRU)
+	cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
 EOPOSTAMBLE
 }
 
