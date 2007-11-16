@@ -3,10 +3,10 @@ package Module::Install::Template;
 use strict;
 use warnings;
 use File::Temp 'tempfile';
-use YAML;
+use Data::Dumper;
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 use base qw(Module::Install::Base);
@@ -44,12 +44,12 @@ sub year_str {
 sub process_templates {
     my ($self, %args) = @_;
 
-    $self->build_requires('YAML');
-
     # only module authors should process templates; if you're not the original
     # author, you won't have the templates anyway, only the generated files.
 
     return unless $self->is_author;
+
+    $::WANTS_MODULE_INSTALL_TEMPLATE = 1;
 
     my $config = {
         template => {
@@ -66,7 +66,7 @@ sub process_templates {
     };
 
     my ($fh, $filename) = tempfile();
-    print $fh Dump $config;
+    print $fh Data::Dumper->Dump([$config], ['config']);
     close $fh or die "can't close $filename: $!\n";
 
     $self->makemaker_args(PM_FILTER => "tt_pm_to_blib $filename");
@@ -127,6 +127,13 @@ sub process_templates {
 sub MY::postamble {
     my $self = shift;
     return '' if defined $::IS_MODULE_INSTALL_TEMPLATE;
+
+    # for some reason, Module::Install runs this subroutine even if the
+    # Makefile.PL doesn't specify process_template(). So here we check whether
+    # process_template() has been run.
+
+    return '' unless defined $::WANTS_MODULE_INSTALL_TEMPLATE;
+
     return '' unless Module::Install::Template->is_author;
     return <<'EOPOSTAMBLE';
 create_distdir : pm_to_blib

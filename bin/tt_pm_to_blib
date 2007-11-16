@@ -3,17 +3,20 @@
 use warnings;
 use strict;
 use Template;
-use YAML 'LoadFile';
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 my $config_filename = shift;
 die "config filename?\n" unless
     defined $config_filename && length $config_filename;
 
-my $config = LoadFile($config_filename);
+open my $fh, '<', $config_filename or die "can't open $config_filename: $!\n";
+my $config;
+eval do { local $/; <$fh> };
+die $@ if $@;
+close $fh or die "can't close $config_filename: $!\n";
 
 my $template = Template->new($config->{template})
     || die Template->error(), "\n";

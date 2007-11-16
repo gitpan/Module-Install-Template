@@ -4,6 +4,18 @@ global:
 releases:
   - author: 'Marcel Gruenauer <marcel@cpan.org>'
     changes:
+      - Don't run MY::postamble unless process_templates() was called
+      - added Twitter step to .shipit
+      - added Module::AutoInstall to Makefile.PL
+      - "uses Data::Dumper instead of YAML in bin/tt_pm_to_blib and Module::Install::Template because YAML requires YAML::Base and others, which aren't copied to inc/"
+      - removed the last remnants of YAML
+    date: 2007-11-16T07:41:52Z
+    tags:
+      - BUGFIX
+      - NEWFEATURE
+    version: 0.04
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
       - MY::postamble had spaces instead of tabs for Makefile; fixed that
       - added pm_to_blib requirement to create_distdir target
     date: 2007-11-11T21:19:40Z
