@@ -5,7 +5,7 @@ use strict;
 use Template;
 
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 my $config_filename = shift;

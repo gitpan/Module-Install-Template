@@ -4,11 +4,19 @@ global:
 releases:
   - author: 'Marcel Gruenauer <marcel@cpan.org>'
     changes:
+      - set the version to 0.05
+      - also passes base_dir (getcwd) to the template
+    date: 2007-11-17T23:37:22Z
+    tags: []
+    version: 0.05
+  - author: 'Marcel Gruenauer <marcel@cpan.org>'
+    changes:
       - Don't run MY::postamble unless process_templates() was called
       - added Twitter step to .shipit
       - added Module::AutoInstall to Makefile.PL
       - "uses Data::Dumper instead of YAML in bin/tt_pm_to_blib and Module::Install::Template because YAML requires YAML::Base and others, which aren't copied to inc/"
       - removed the last remnants of YAML
+      - added support for 'other_authors'
     date: 2007-11-16T07:41:52Z
     tags:
       - BUGFIX

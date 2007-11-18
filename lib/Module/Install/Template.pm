@@ -2,11 +2,12 @@ package Module::Install::Template;
 
 use strict;
 use warnings;
+use Cwd;
 use File::Temp 'tempfile';
 use Data::Dumper;
 
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 use base qw(Module::Install::Base);
@@ -51,6 +52,13 @@ sub process_templates {
 
     $::WANTS_MODULE_INSTALL_TEMPLATE = 1;
 
+    my @other_authors;
+    if (defined $args{other_authors}) {
+        @other_authors = ref $args{other_authors} eq 'ARRAY'
+            ? @{ $args{other_authors} }
+            : ($args{other_authors});
+    }
+
     my $config = {
         template => {
             INCLUDE_PATH => "$ENV{HOME}/.mitlib",
@@ -62,6 +70,8 @@ sub process_templates {
             year     => $self->year_str($args{first_year}),
             tag      => $self->tag,
             rt_email => $self->rt_email,
+            base_dir => getcwd(),
+            (@other_authors ? (other_authors => \@other_authors) : ()),
         },
     };
 
@@ -126,6 +136,8 @@ sub process_templates {
 
 sub MY::postamble {
     my $self = shift;
+
+    no warnings 'once';
     return '' if defined $::IS_MODULE_INSTALL_TEMPLATE;
 
     # for some reason, Module::Install runs this subroutine even if the
