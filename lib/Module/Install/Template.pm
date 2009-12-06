@@ -1,23 +1,17 @@
 package Module::Install::Template;
-
+use 5.006;
 use strict;
 use warnings;
 use Cwd;
 use File::Temp 'tempfile';
 use Data::Dumper;
-
-
-our $VERSION = '0.05';
-
-
+our $VERSION = '0.07';
 use base qw(Module::Install::Base);
-
 
 sub is_author {
     my $author = $^O eq 'VMS' ? './inc/_author' : './inc/.author';
     -d $author;
 }
-
 
 sub tag {
     my $self = shift;
@@ -25,40 +19,34 @@ sub tag {
     $name;
 }
 
-
 sub rt_email {
     my $self = shift;
     sprintf '<bug-%s@rt.cpan.org>', lc $self->name;
 }
-
 
 sub year_str {
     my ($self, $first_year) = @_;
     my $this_year = ((localtime)[5] + 1900);
     return $this_year if (!defined $first_year) || $first_year == $this_year;
     die "first year ($first_year) is after this year ($this_year)?\n"
-        if $first_year > $this_year;
+      if $first_year > $this_year;
     return "$first_year-$this_year";
 }
-
 
 sub process_templates {
     my ($self, %args) = @_;
 
     # only module authors should process templates; if you're not the original
     # author, you won't have the templates anyway, only the generated files.
-
     return unless $self->is_author;
-
     $::WANTS_MODULE_INSTALL_TEMPLATE = 1;
-
     my @other_authors;
     if (defined $args{other_authors}) {
-        @other_authors = ref $args{other_authors} eq 'ARRAY'
-            ? @{ $args{other_authors} }
-            : ($args{other_authors});
+        @other_authors =
+          ref $args{other_authors} eq 'ARRAY'
+          ? @{ $args{other_authors} }
+          : ($args{other_authors});
     }
-
     my $config = {
         template => {
             INCLUDE_PATH => "$ENV{HOME}/.mitlib",
@@ -74,47 +62,36 @@ sub process_templates {
             (@other_authors ? (other_authors => \@other_authors) : ()),
         },
     };
-
     my ($fh, $filename) = tempfile();
     print $fh Data::Dumper->Dump([$config], ['config']);
     close $fh or die "can't close $filename: $!\n";
-
     $self->makemaker_args(PM_FILTER => "tt_pm_to_blib $filename");
 
     # Some of the following may not have been available in the template; the
     # module author can specify that they should come from somewhere else.
-
     if (defined $args{rest_from}) {
 
         # try to get all values that haven't been defined yet from the
         # indicated source
-
         for my $key (qw(version perl_version author license abstract)) {
             next if defined($self->$key) && length($self->$key);
             my $method = "${key}_from";
             $self->$method($args{rest_from});
         }
     }
-
     $self->all_from($args{all_from})
-        if defined $args{all_from};
-
+      if defined $args{all_from};
     $self->version_from($args{version_from})
-        if defined $args{version_from};
-
+      if defined $args{version_from};
     $self->perl_version_from($args{perl_version_from})
-        if defined $args{perl_version_from};
-
+      if defined $args{perl_version_from};
     $self->author_from($args{author_from})
-        if defined $args{author_from};
-
+      if defined $args{author_from};
     $self->license_from($args{license_from})
-        if defined $args{license_from};
-
+      if defined $args{license_from};
     $self->abstract_from($args{abstract_from})
-        if defined $args{abstract_from};
+      if defined $args{abstract_from};
 }
-
 
 # 'make dist' uses ExtUtils::Manifest's maniread() and manicopy() to determine
 # what should be copied into the dist dir. This is fine for most purposes, but
@@ -132,20 +109,15 @@ sub process_templates {
 # And 'make disttest' needs to be modified as well; we need to have the blib/
 # files before we can test the distribution. So I've added a 'pm_to_blib'
 # requirement to the 'disttest' target.
-
-
 sub MY::postamble {
     my $self = shift;
-
     no warnings 'once';
     return '' if defined $::IS_MODULE_INSTALL_TEMPLATE;
 
     # for some reason, Module::Install runs this subroutine even if the
     # Makefile.PL doesn't specify process_template(). So here we check whether
     # process_template() has been run.
-
     return '' unless defined $::WANTS_MODULE_INSTALL_TEMPLATE;
-
     return '' unless Module::Install::Template->is_author;
     return <<'EOPOSTAMBLE';
 create_distdir : pm_to_blib
@@ -161,22 +133,16 @@ disttest : pm_to_blib distdir
 	cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
 EOPOSTAMBLE
 }
-
-
 1;
-
-
 __END__
 
 =head1 NAME
 
-Module::Install::Template - treat module source code as a template
+Module::Install::Template - Treat module source code as a template
 
 =head1 SYNOPSIS
 
-Makefile.PL:
-
-    ...
+    # in C<Makefile.PL>:
 
     process_templates(
         first_year => 2007,
@@ -185,11 +151,9 @@ Makefile.PL:
         end_tag    => '%}',
     );
 
-    ...
-
 =head1 DESCRIPTION
 
-This module, if used in the Makefile.PL as shown in the synopsis, treats
+This module, if used in the C<Makefile.PL> as shown in the synopsis, treats
 module source code files as templates and processes them with the L<Template>
 Toolkit during C<make> time.
 
@@ -226,7 +190,7 @@ distributions that use XS or SWIG.
 
 =head1 TAGS
 
-If you talk about this module in blogs, on del.icio.us or anywhere else,
+If you talk about this module in blogs, on L<delicious.com> or anywhere else,
 please use the C<moduleinstalltemplate> tag.
 
 =head1 BUGS AND LIMITATIONS
@@ -245,7 +209,7 @@ See perlmodinstall for information and options on installing Perl modules.
 
 The latest version of this module is available from the Comprehensive Perl
 Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a CPAN
-site near you. Or see <http://www.perl.com/CPAN/authors/id/M/MA/MARCEL/>.
+site near you. Or see L<http://search.cpan.org/dist/Module-Install-Template/>.
 
 =head1 AUTHOR
 
@@ -253,7 +217,7 @@ Marcel GrE<uuml>nauer, C<< <marcel@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Marcel GrE<uuml>nauer
+Copyright 2007-2009 by Marcel GrE<uuml>nauer
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
