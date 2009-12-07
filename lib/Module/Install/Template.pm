@@ -5,7 +5,7 @@ use warnings;
 use Cwd;
 use File::Temp 'tempfile';
 use Data::Dumper;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 use base qw(Module::Install::Base);
 
 sub is_author {
